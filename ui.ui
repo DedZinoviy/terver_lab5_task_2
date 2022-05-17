@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1710</width>
-    <height>837</height>
+    <width>1798</width>
+    <height>931</height>
    </rect>
   </property>
   <property name="font">
@@ -57,20 +57,6 @@
        <widget class="QPushButton" name="interval_amount_button">
         <property name="text">
          <string>Задать</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Выборка</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTextEdit" name="variationSeriesText">
-        <property name="readOnly">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -152,10 +138,6 @@
         </row>
        </widget>
       </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
@@ -169,7 +151,10 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap>img/formula.png</pixmap>
+         <pixmap>img/function.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -210,12 +195,53 @@
         </item>
         <item>
          <widget class="QTextEdit" name="functionEdit">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>200</height>
+           </size>
+          </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Выборка</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="variationSeriesText">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Числовые характеристики</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>img/average_x.png</pixmap>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -236,6 +262,16 @@
        </layout>
       </item>
       <item>
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>img/dispersion.png</pixmap>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="label_6">
@@ -254,6 +290,16 @@
        </layout>
       </item>
       <item>
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>img/diviation.png</pixmap>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <widget class="QLabel" name="label_7">
@@ -270,6 +316,16 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>img/corrected_diviation.png</pixmap>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -336,7 +392,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1710</width>
+     <width>1798</width>
      <height>34</height>
     </rect>
    </property>

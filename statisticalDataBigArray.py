@@ -56,10 +56,11 @@ class Statistic():
         result = []
 
         for i in range(0, k):
+            epsilon = 5 * 10 ** (-5)
             if i != k-1:
-                result.append(sum(True for item in serias if item>=intervals[i][0] and item < intervals[i][1]))
+                result.append(sum(True for item in serias if item >= intervals[i][0] and item < intervals[i][1]))
             else:
-                result.append(sum(True for item in serias if item>=intervals[i][0] and item <= intervals[i][1]))
+                result.append(sum(True for item in serias if item >= intervals[i][0] and item <= intervals[i][1] + epsilon))
 
         return result
 

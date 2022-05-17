@@ -28,6 +28,7 @@ class mywindow(QtWidgets.QMainWindow):
         self.ui.plotType.currentIndexChanged.connect(self.buildPlot)
         self.ui.openFileAction.triggered.connect(self.openFile)
         self.ui.rangeType.currentIndexChanged.connect(self.changeRangeType)
+        self.ui.interval_amount_button.clicked.connect(self.setIntervalAmount)
 
         self.statistic = Statistic()
         self.rangeType = 0
@@ -36,7 +37,7 @@ class mywindow(QtWidgets.QMainWindow):
     def openFile(self):
         fileName = QtWidgets.QFileDialog.getOpenFileName(self, "Открыть файл", "./", "Text file (*.txt)")
         fileName = fileName[0]
-        interval_anount = self.ui.interval_amount_spin_box.value()
+        interval_amount = self.ui.interval_amount_spin_box.value()
 
         try:
             file = open(fileName, 'r', encoding='utf-8')
@@ -44,15 +45,16 @@ class mywindow(QtWidgets.QMainWindow):
             
             serias = line.split(' ')
             serias = [float(var) for var in serias]
-            self.statistic.setSeries(serias, interval_anount)
+            self.statistic.setSeries(serias, interval_amount)
             
             string_serias = ", ".join(str(var) for var in self.statistic.series)
             self.ui.variationSeriesText.setText(string_serias)
+            self.solve()
 
         except:
             QtWidgets.QMessageBox.warning(self, "Ошибка ввода", "Ошибка ввода!\nПроверьте корректность входного файла")
 
-        self.solve()
+
     
     def changeRangeType(self):
         self.rangeType = self.ui.rangeType.currentIndex()
@@ -68,6 +70,13 @@ class mywindow(QtWidgets.QMainWindow):
             self.solve()
 
     
+    def setIntervalAmount(self):
+        interval_amount = self.ui.interval_amount_spin_box.value()
+        self.statistic.setSeries(self.statistic.series, interval_amount)
+        if (len(self.statistic.series) > 0):
+            self.solve()
+
+
     def solve(self):
         self.setTables()
         self.setDistributionFunction()
@@ -119,19 +128,24 @@ class mywindow(QtWidgets.QMainWindow):
             variationSerias = self.statistic.grouped
 
         for i in range(columnCount):
-            self.ui.frequencyTable.horizontalHeader().resizeSection(i, len(str(variationSerias[i]) * 12))
+            if (self.rangeType == 0):
+                variation = "[%g, %g]" % (variationSerias[i][0], variationSerias[i][1])
+            else:
+                variation = "%g" % variationSerias[i]
+
+            self.ui.frequencyTable.horizontalHeader().resizeSection(i, len(variation) * 12)
             self.ui.frequencyTable.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(''))
 
-            self.ui.frequencyTable.setItem(0, i, QtWidgets.QTableWidgetItem(str(variationSerias[i])))
+            self.ui.frequencyTable.setItem(0, i, QtWidgets.QTableWidgetItem(variation))
             self.ui.frequencyTable.item(0, i).setFlags(QtCore.Qt.ItemIsEnabled)
 
             self.ui.frequencyTable.setItem(1, i, QtWidgets.QTableWidgetItem(str(frequency[i])))
             self.ui.frequencyTable.item(1, i).setFlags(QtCore.Qt.ItemIsEnabled)
 
-            self.ui.periodicityTable.horizontalHeader().resizeSection(i, max(len(str(variationSerias[i]) * 12), 72))
+            self.ui.periodicityTable.horizontalHeader().resizeSection(i, max(len(variation) * 12, 72))
             self.ui.periodicityTable.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(''))
 
-            self.ui.periodicityTable.setItem(0, i, QtWidgets.QTableWidgetItem(str(variationSerias[i])))
+            self.ui.periodicityTable.setItem(0, i, QtWidgets.QTableWidgetItem(variation))
             self.ui.periodicityTable.item(0, i).setFlags(QtCore.Qt.ItemIsEnabled)
             
             self.ui.periodicityTable.setItem(1, i, QtWidgets.QTableWidgetItem(str(periodicity[i])))
@@ -150,11 +164,10 @@ class mywindow(QtWidgets.QMainWindow):
         else:
             var = self.statistic.grouped
             
-        string_function += "0, при x ≤ " + str(var[0]) + "\n"
+        string_function += "0, при x ≤ %g" % var[0] + "\n"
         for i in range(amount - 1):
-            string_function += patern_string % (f[i + 1], var[i], var[i + 1])
-            string_function += "\n"
-        string_function += "1, при x > " + str(var[amount - 1])
+            string_function += patern_string % (f[i + 1], var[i], var[i + 1]) + "\n"
+        string_function += "1, при x > %g" % var[amount - 1]
 
         self.ui.functionEdit.setText(string_function)
 
@@ -196,7 +209,7 @@ class mywindow(QtWidgets.QMainWindow):
     
     def plotPoligon(self, variationSeries : list, periodicity : list, type : PoligonType):
         symbols = ["n", "w"]
-        texts = ["частоты", "относительной частоты"]
+        texts = ["частот", "относительной частот"]
 
         symbol = symbols[type.value]
         text = texts[type.value]
@@ -207,12 +220,12 @@ class mywindow(QtWidgets.QMainWindow):
         self.ui.graphWidget.setLabel('left', symbol + "(x)", **self.style1)
         self.ui.graphWidget.setLabel('bottom', "x", **self.style1)
                 
-        self.ui.graphWidget.plot(variationSeries, periodicity, pen=self.pen)
+        self.ui.graphWidget.plot(variationSeries, periodicity, pen=self.pen, symbol='d', symbolSize=15, symbolBrush='r')
 
     
     def plotHistogramma(self, interlans, periodicity, type : PoligonType):
         symbols = ["n(x)/h", "w(x)/h"]
-        texts = ["частоты", "относительной частоты"]
+        texts = ["частот", "относительной частот"]
 
         symbol = symbols[type.value]
         text = texts[type.value]
