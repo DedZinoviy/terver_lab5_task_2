@@ -34,16 +34,20 @@ class Statistic():
         sortList = sorted(list)
 
         h = (sortList[-1] - sortList[0])/k
-        h = mt.ceil(h)
+        h = round(h, 8)
 
         x0 = sortList[0] - h/2
-        if x0+h*k < sortList[-1]:
+        if x0+h*k <= sortList[-1]:
             x0 = sortList[0]
         
         result = []
 
         for i in range(0, k):
-            result.append([(x0 + h * i), (x0 +h * (i + 1))])
+            xi = x0 + h * i
+            xi = round(xi, 8)
+            yi = x0 + h * (i + 1)
+            yi = round(yi, 8)
+            result.append([xi, yi])
         
         return result
 
@@ -69,7 +73,9 @@ class Statistic():
         result = []
 
         for i in range(0, len(intervals)):
-            result.append((intervals[i][0] + intervals[i][1] ) / 2)
+            element = (intervals[i][0] + intervals[i][1] ) / 2
+            element = round(element, 8)
+            result.append(element)
 
         return result
 
@@ -80,10 +86,10 @@ class Statistic():
         
         for i in range(0, len(groupedSeries)):
             empericalFunction.append(np.sum(intervalRelativeFrequency[:i], initial=0)) #сумма элементов до
-            empericalFunction[i] = round(empericalFunction[i], 4)
+            empericalFunction[i] = round(empericalFunction[i], 3)
         
         empericalFunction.append(np.sum(intervalRelativeFrequency,initial=0))
-        empericalFunction[-1] = round(empericalFunction[-1], 4)
+        empericalFunction[-1] = round(empericalFunction[-1], 3)
         return empericalFunction
 
     #X выбор

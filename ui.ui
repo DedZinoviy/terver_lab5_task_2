@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1712</width>
+    <width>1710</width>
     <height>837</height>
    </rect>
   </property>
@@ -22,6 +22,20 @@
    <layout class="QHBoxLayout" name="horizontalLayout_6">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QComboBox" name="rangeType">
+        <item>
+         <property name="text">
+          <string>Интервальный ряд</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Группированный ряд</string>
+         </property>
+        </item>
+       </widget>
+      </item>
       <item>
        <widget class="QLabel" name="label_11">
         <property name="text">
@@ -40,9 +54,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="interval_amount_button">
+        <property name="text">
+         <string>Задать</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Вариационный ряд</string>
+         <string>Выборка</string>
         </property>
        </widget>
       </item>
@@ -281,12 +302,12 @@
         </property>
         <item>
          <property name="text">
-          <string>Полигон частот</string>
+          <string>Гистограмма частот</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Полигон относительных частот</string>
+          <string>Гистограмма относительных частот</string>
          </property>
         </item>
         <item>
@@ -315,7 +336,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1712</width>
+     <width>1710</width>
      <height>34</height>
     </rect>
    </property>

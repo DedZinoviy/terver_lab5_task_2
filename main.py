@@ -27,8 +27,10 @@ class mywindow(QtWidgets.QMainWindow):
 
         self.ui.plotType.currentIndexChanged.connect(self.buildPlot)
         self.ui.openFileAction.triggered.connect(self.openFile)
+        self.ui.rangeType.currentIndexChanged.connect(self.changeRangeType)
 
         self.statistic = Statistic()
+        self.rangeType = 0
         
 
     def openFile(self):
@@ -41,39 +43,66 @@ class mywindow(QtWidgets.QMainWindow):
             line = file.readline()
             
             serias = line.split(' ')
-            serias = [int(var) for var in serias]
+            serias = [float(var) for var in serias]
             self.statistic.setSeries(serias, interval_anount)
             
             string_serias = ", ".join(str(var) for var in self.statistic.series)
             self.ui.variationSeriesText.setText(string_serias)
-            self.solve()
+
         except:
             QtWidgets.QMessageBox.warning(self, "Ошибка ввода", "Ошибка ввода!\nПроверьте корректность входного файла")
 
+        self.solve()
+    
+    def changeRangeType(self):
+        self.rangeType = self.ui.rangeType.currentIndex()
 
+        if (self.rangeType == 0):
+            self.ui.plotType.setItemText(0, 'Гистограмма частот')
+            self.ui.plotType.setItemText(1, 'Гистограмма относительных частот')
+        else:
+            self.ui.plotType.setItemText(0, 'Полигон частот')
+            self.ui.plotType.setItemText(1, 'Полигон относительных частот')
+        
+        if (len(self.statistic.series) > 0):
+            self.solve()
 
     
     def solve(self):
         self.setTables()
-        self.buildPlot()
-        self.setFunction()
+        self.setDistributionFunction()
         self.setCharacteristic()
-
+        self.buildPlot()       
     
     def buildPlot(self):
         plotType = self.ui.plotType.currentIndex()
-        var = self.statistic.grouped
-        n = self.statistic.frequency
-        w = self.statistic.relative_frequency
-        f = self.statistic.distribution_function
-
         self.ui.graphWidget.clear()
-        if (plotType == 0):
-            self.plotPoligon(var, n, PoligonType.FREQUENCY)
-        elif (plotType == 1):
-            self.plotPoligon(var, w, PoligonType.PERIODICITY)
+
+        if (self.rangeType == 0):
+            h = self.statistic.interval_series[0][1] - self.statistic.interval_series[0][0]
+            var = self.statistic.interval_series
+            n = [round((i / h), 4) for i in self.statistic.frequency]
+            w = [round((i / h), 4) for i in self.statistic.relative_frequency]
+            f = self.statistic.distribution_function
+
+            if (plotType == 0):
+                self.plotHistogramma(var, n, PoligonType.FREQUENCY)
+            elif (plotType == 1):
+                self.plotHistogramma(var, w, PoligonType.PERIODICITY)
+            else:
+                self.plotDistributionFunction([interval[1] for interval in self.statistic.interval_series], f)
         else:
-            self.plotDistributionFunction(var, f)
+            var = self.statistic.grouped
+            n = self.statistic.frequency
+            w = self.statistic.relative_frequency
+            f = self.statistic.distribution_function
+
+            if (plotType == 0):
+                self.plotPoligon(var, n, PoligonType.FREQUENCY)
+            elif (plotType == 1):
+                self.plotPoligon(var, w, PoligonType.PERIODICITY)
+            else:
+                self.plotDistributionFunction(var, f)
         
 
     def setTables(self):
@@ -81,9 +110,13 @@ class mywindow(QtWidgets.QMainWindow):
         self.ui.frequencyTable.setColumnCount(columnCount)
         self.ui.periodicityTable.setColumnCount(columnCount)
 
-        variationSerias = self.statistic.interval_series
         frequency = self.statistic.frequency
         periodicity = self.statistic.relative_frequency
+
+        if (self.rangeType == 0):
+            variationSerias = self.statistic.interval_series
+        else:
+            variationSerias = self.statistic.grouped
 
         for i in range(columnCount):
             self.ui.frequencyTable.horizontalHeader().resizeSection(i, len(str(variationSerias[i]) * 12))
@@ -95,7 +128,7 @@ class mywindow(QtWidgets.QMainWindow):
             self.ui.frequencyTable.setItem(1, i, QtWidgets.QTableWidgetItem(str(frequency[i])))
             self.ui.frequencyTable.item(1, i).setFlags(QtCore.Qt.ItemIsEnabled)
 
-            self.ui.periodicityTable.horizontalHeader().resizeSection(i, len(str(variationSerias[i]) * 12))
+            self.ui.periodicityTable.horizontalHeader().resizeSection(i, max(len(str(variationSerias[i]) * 12), 72))
             self.ui.periodicityTable.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(''))
 
             self.ui.periodicityTable.setItem(0, i, QtWidgets.QTableWidgetItem(str(variationSerias[i])))
@@ -105,13 +138,18 @@ class mywindow(QtWidgets.QMainWindow):
             self.ui.periodicityTable.item(1, i).setFlags(QtCore.Qt.ItemIsEnabled)
 
 
-    def setFunction(self):
+    def setDistributionFunction(self):
         string_function = ""
         patern_string = "%g, при %g < x ≤ %g"
         amount = self.statistic.intervals_amount
-        var = self.statistic.grouped
         f = self.statistic.distribution_function
 
+        if (self.rangeType == 0):
+            interval_series = self.statistic.interval_series
+            var = [interval[1] for interval in interval_series]   
+        else:
+            var = self.statistic.grouped
+            
         string_function += "0, при x ≤ " + str(var[0]) + "\n"
         for i in range(amount - 1):
             string_function += patern_string % (f[i + 1], var[i], var[i + 1])
@@ -132,6 +170,7 @@ class mywindow(QtWidgets.QMainWindow):
         self.ui.cigmaEdit.setText(cigma)
         self.ui.sEdit.setText(s)
 
+    
     def plotDistributionFunction(self, variationSeries : list, function : list):
         amount = len(variationSeries)
         
@@ -170,6 +209,40 @@ class mywindow(QtWidgets.QMainWindow):
                 
         self.ui.graphWidget.plot(variationSeries, periodicity, pen=self.pen)
 
+    
+    def plotHistogramma(self, interlans, periodicity, type : PoligonType):
+        symbols = ["n(x)/h", "w(x)/h"]
+        texts = ["частоты", "относительной частоты"]
+
+        symbol = symbols[type.value]
+        text = texts[type.value]
+        amount = len(interlans)
+        
+        self.ui.graphWidget.setXRange(interlans[0][0], interlans[len(interlans) - 1][1])
+        self.ui.graphWidget.setYRange(0, max(periodicity))
+        self.ui.graphWidget.setTitle("Гистограмма " + text, color=(0, 0, 0), size="15pt")
+        self.ui.graphWidget.setLabel('left', symbol, **self.style1)
+        self.ui.graphWidget.setLabel('bottom', "x", **self.style1)
+
+        for i in range(len(interlans)):
+            xi = [interlans[i][0], interlans[i][1]]
+            yi = [periodicity[i], periodicity[i]]
+            self.ui.graphWidget.plot(xi, yi, pen=self.pen)
+
+        for i in range(amount):
+            xi = [interlans[i][0], interlans[i][0]]
+            
+            if (i  == 0):
+                yi = [0, periodicity[i]]
+            else:
+                yi = [0, max(periodicity[i - 1], periodicity[i])]
+            
+            self.ui.graphWidget.plot(xi, yi, pen=self.pen)
+
+        xi = [interlans[amount - 1][1], interlans[amount - 1][1]]
+        yi = [0, periodicity[amount - 1]]
+        self.ui.graphWidget.plot(xi, yi, pen=self.pen)
+        
     
     
 def main():
