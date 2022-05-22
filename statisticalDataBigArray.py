@@ -1,3 +1,4 @@
+from operator import le
 import numpy as np
 import math as mt
 
@@ -5,6 +6,7 @@ import math as mt
 class Statistic():
     def __init__(self):
         self.intervals_amount = 0
+        self.amount = 0
         self.series = []
         self.interval_series = []
         self.frequency = []
@@ -19,9 +21,23 @@ class Statistic():
     def setSeries(self, series, intervalsAmount):
         self.series = sorted(series)
         self.intervals_amount = intervalsAmount
+        self.amount = len(self.series)
         self.interval_series = self.intervalSeries(self.series, self.intervals_amount)
         self.frequency = self.intervalFrequencyRange(self.interval_series, self.series, self.intervals_amount)
-        self.relative_frequency = self.intervalRelativeFrequencyRange(self.frequency, len(self.series))
+        self.countStatistic()
+
+    
+    def setIntervals(self, intervalSerias, frequency):
+        self.interval_series = intervalSerias
+        self.frequency = frequency
+        self.intervals_amount = len(intervalSerias)
+        self.amount = sum(frequency)
+        self.countStatistic()
+
+
+    #Рассчитать величины
+    def countStatistic(self):
+        self.relative_frequency = self.intervalRelativeFrequencyRange(self.frequency, self.amount)
         self.grouped = self.groupedSeries(self.interval_series)
         self.distribution_function = self.empiricalDistributionFunction(self.grouped, self.relative_frequency)
         self.average_sample = self.averageSample(self.grouped, self.frequency)

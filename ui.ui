@@ -213,6 +213,13 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
+       <widget class="QPushButton" name="dialogBtn">
+        <property name="text">
+         <string>Задать интервальный ряд</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="label">
         <property name="text">
          <string>Выборка</string>
