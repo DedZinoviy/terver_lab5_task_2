@@ -1,8 +1,6 @@
-from ipaddress import collapse_addresses
-from pydoc import classname
 from statisticalDataBigArray import Statistic
 import numpy as np
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 from ui import Ui_MainWindow
 from dialog import Ui_EnterDialog
 from pyqtgraph import PlotWidget
@@ -58,7 +56,7 @@ class dialogwindow(QtWidgets.QDialog):
                 if len(interval) != 2:
                     raise str("ERROR")
 
-                if interval[1] - interval[0] != h:
+                if (interval[1] - interval[0] - h > -1 * 10**(-5)) and (interval[1] - interval[0] - h < -1 * 10**(-5)):
                     raise str("ERROR")
 
                 if intervals[i - 1][1] != interval[0]:
@@ -104,9 +102,17 @@ class mywindow(QtWidgets.QMainWindow):
         self.pen = pg.mkPen(color='r', width=3)
         self.pen1 = pg.mkPen(color='r', width=2, style=QtCore.Qt.DashLine)
         self.style1 = {'font-size':'30px'}
-        
+        font = QtGui.QFont()
+        font.setPointSize(12)
+
         self.ui.graphWidget.setBackground((225, 225, 225))
-        self.ui.graphWidget.showGrid(x=True, y=True, alpha=1)
+        self.ui.graphWidget.getAxis('left').setPen('black')
+        self.ui.graphWidget.getAxis('left').setTextPen('black')
+        self.ui.graphWidget.getAxis("left").setStyle(tickFont = font)
+        self.ui.graphWidget.getAxis('bottom').setPen('black')
+        self.ui.graphWidget.getAxis('bottom').setTextPen('black')
+        self.ui.graphWidget.getAxis("bottom").setStyle(tickFont = font)
+        self.ui.graphWidget.showGrid(x=True, y=True, alpha=0.6)
 
         self.ui.plotType.currentIndexChanged.connect(self.buildPlot)
         self.ui.openFileAction.triggered.connect(self.openFile)
@@ -177,6 +183,7 @@ class mywindow(QtWidgets.QMainWindow):
 
 
     def solve(self):
+        self.ui.spinBox.setValue(self.statistic.amount)
         self.setTables()
         self.setDistributionFunction()
         self.setCharacteristic()
@@ -297,8 +304,9 @@ class mywindow(QtWidgets.QMainWindow):
             yi = [function[i + 1], function[i + 1]]
             self.ui.graphWidget.plot(xi, yi, pen=self.pen)
 
-        self.ui.graphWidget.plot([-100 * variationSeries[amount - 1], variationSeries[0]], [0, 0], pen=self.pen)    
-        self.ui.graphWidget.plot([variationSeries[amount - 1], 100 * variationSeries[amount - 1]], [1, 1], pen=self.pen)
+        maxElement = abs(max(variationSeries, key=abs))
+        self.ui.graphWidget.plot([-100 * maxElement, variationSeries[0]], [0, 0], pen=self.pen)    
+        self.ui.graphWidget.plot([variationSeries[amount - 1], 100 * maxElement], [1, 1], pen=self.pen)
 
         for i in range(amount):
             xi = [variationSeries[i], variationSeries[i]]
