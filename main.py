@@ -26,11 +26,10 @@ class dialogwindow(QtWidgets.QDialog):
         self.buttons[1].setText("Отмена")
 
         self.setTable()
-        self.buttons[0].clicked.connect(self.getButton)
         self.ui.intervalAmountBox.valueChanged.connect(self.setTable)
 
     
-    def getButton(self):
+    def accept(self):
         amount = self.ui.intervalsTable.columnCount()
         intervals= []
         frequency = []
@@ -65,12 +64,11 @@ class dialogwindow(QtWidgets.QDialog):
                 intervals.append(interval)
             
             self.mainwindow.statistic.setIntervals(intervals, frequency)
+            super().accept()
         
         except:
             QtWidgets.QMessageBox.warning(self, "Ошибка ввода", "Некорректное значение")
         
-
-
     
     def setTable(self):
         columnCount = self.ui.intervalAmountBox.value()
